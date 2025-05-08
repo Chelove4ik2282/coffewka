@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  email    String  @id
+  password String
+  createdAt DateTime @default(now())
+
+  carts    Cart[]   // Связь "один ко многим" (у одного пользователя может быть много корзин)
+}
+
+model Cart {
+  id        Int     @id @default(autoincrement())
+  userEmail String
+  items     String  // Сохраняем JSON как обычную строку (NVARCHAR в SQL Server)
+  user      User    @relation(fields: [userEmail], references: [email])
+
+  createdAt DateTime @default(now())
+}
