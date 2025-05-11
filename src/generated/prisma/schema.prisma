@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  password       String
+  accessToken    String? // <- новый столбец для access токена
+  refreshToken   String? // <- новый столбец для refresh токена
+  tokenExpiresAt DateTime? // <- когда истекает access токен
+  createdAt      DateTime  @default(now())
+
+  cartItems CartItem[]
+}
+
+model CartItem {
+  id       String @id @default(uuid())
+  name     String
+  size     String // small / medium / large
+  price    Float
+  quantity Int    @default(1)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
